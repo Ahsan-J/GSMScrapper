@@ -96,7 +96,7 @@ pub fn get_mobile_info(node: &Handle) -> model::MobileData {
     return mobile_data;
 }
 
-pub async fn process_gsm_url(url: &String) -> model::MobileData {
+pub fn process_gsm_url(url: &String) -> model::MobileData {
     let url_reg = Regex::new(r"(https?://(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=]*))").unwrap();
 
     if !url_reg.is_match(url.as_bytes()) {
@@ -104,11 +104,9 @@ pub async fn process_gsm_url(url: &String) -> model::MobileData {
         panic!("Regex not matching proper url pattern")
     }
 
-    let body = reqwest::get(url)
-        .await
+    let body = reqwest::blocking::get(url)
         .expect("Cannot make a request")
         .text()
-        .await
         .expect("Cannot convert body text");
 
     let dom = parse_document(RcDom::default(), Default::default())
